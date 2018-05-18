@@ -1,0 +1,13 @@
+#!groovy
+
+node {
+    checkout scm
+    stage('Build') {
+        echo 'Hello world from my pipeline'
+        echo '------------ env'
+        sh 'env'
+        echo '------------ set'
+        sh 'set'
+        echo '------------'
+    }
+}
