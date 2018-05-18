@@ -69,8 +69,13 @@ node {
         String sourceBranch = env.GITHUB_PR_SOURCE_BRANCH
 //        GITHUB_PR_TITLE
 
+        def userRemoteConfigs = scm.userRemoteConfigs[0]
+
+        withCredentials([string(credentialsId: userRemoteConfigs.credentialsId, variable: 'TOKEN')]) {
+            println("Token found: ${TOKEN}")
+        }
+
         dir("dst-project") {
-            def userRemoteConfigs = scm.userRemoteConfigs[0]
             GlobalVariable.ALL.each { var ->
                 println("Var: ${var}")
             }
@@ -81,6 +86,9 @@ node {
 //            def build = currentBuild.build
             def cred0 = CredentialsProvider.findCredentialById(userRemoteConfigs.credentialsId
                     , StringCredentials.class, mbuild2, [])
+
+            println("Found cred0: ${cred0}")
+
             CredentialsProvider.lookupCredentials(
                     com.cloudbees.plugins.credentials.Credentials.class
             ).each { cred ->
