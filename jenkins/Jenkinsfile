@@ -79,7 +79,7 @@ node {
 //            def build = currentBuild.build
             def cred0 = CredentialsProvider.findCredentialById(id: userRemoteConfigs.credentialsId
                     , type: StringCredentials.class
-                    , mbuild2, [])
+                    , run: mbuild2, domainRequirements: [])
             CredentialsProvider.lookupCredentials(
                     com.cloudbees.plugins.credentials.Credentials.class
             ).each { cred ->
