@@ -27,6 +27,7 @@ node {
         echo "env: ${envVars}"
         echo "workspace: ${workspace}"
 
+/*
         echo("scm. branches: ${scm.branches}, doGenerateSubmoduleConfigurations: ${scm.doGenerateSubmoduleConfigurations} , " +
                 "extensions: ${scm.extensions}, userRemoteConfigs: ${scm.userRemoteConfigs}")
 
@@ -44,6 +45,7 @@ node {
         echo '------------ set'
         sh 'set'
         echo '------------'
+*/
 
 //        String sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
 
@@ -56,18 +58,34 @@ node {
         String sourceBranch = env.GITHUB_PR_SOURCE_BRANCH
 //        GITHUB_PR_TITLE
 
-        dir ("dst-project") {
-            checkout([
+        dir("dst-project") {
+            userRemoteConfigs = scm.userRemoteConfigs
+            dstScm = [
                     $class                           : 'GitSCM',
                     branches                         : [[name: "*/${targetBranch}"], [name: "*/${sourceBranch}"]],
                     doGenerateSubmoduleConfigurations: false,
                     extensions                       : [],
-                    userRemoteConfigs                : scm.userRemoteConfigs
-//                    userRemoteConfigs                : [[]] scm.userRemoteConfigs
-            ])
+//                    userRemoteConfigs                : scm.userRemoteConfigs
+                    userRemoteConfigs                : [[url: 'git@github.com:mpashka/test-jenkins-repo-dst.git', credentialsId: userRemoteConfigs.credentialsId]]
+            ]
+
+            checkout(dstScm)
             int targetBranchExists = sh(returnStdout: false, returnStatus: true, script: "git rev-parse --quiet --verify ${targetBranch}").trim()
             if (targetBranchExists != 0) {
-                echo "Target branch doesn't exist in "
+                throw new hudson.AbortException("Target branch ${targetBranchExists} doesn't exist in dest project")
+            }
+
+            int sourceBranchExists = sh(returnStdout: false, returnStatus: true, script: "git rev-parse --quiet --verify ${sourceBranch}").trim()
+            if (sourceBranchExists != 0) {
+                sh("git checkout -b ${sourceBranch}")
+                sh("git branch --set-upstream-to origin/${sourceBranch}")
+            }
+            writeFile(name: 'aaa.txt', text: "Creating commit for original ${env.GIT_COMMIT}")
+            sh("git add aaa.txt")
+            sh("git commit -m \"Commit from original ${env.GIT_COMMIT}\"")
+            sh("git push")
+            if (sourceBranchExists != 0) {
+                sh("git request-pull ")
             }
         }
     }
