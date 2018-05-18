@@ -59,16 +59,10 @@ node {
 
 //        GitSCM
 
-        String targetBranch = env.GITHUB_PR_TARGET_BRANCH
-        String sourceBranch = env.GITHUB_PR_SOURCE_BRANCH
-//        GITHUB_PR_TITLE
-
-
-        withCredentials([string(credentialsId: env.MY_GITHUB_TOKEN, variable: 'TOKEN')]) {
-            println("Token found: ${TOKEN}")
-        }
-
         dir("dst-project") {
+            String targetBranch = env.GITHUB_PR_TARGET_BRANCH
+            String sourceBranch = env.GITHUB_PR_SOURCE_BRANCH
+
             def userRemoteConfigs = scm.userRemoteConfigs[0]
             dstScm = [
                     $class                           : 'GitSCM',
@@ -94,9 +88,17 @@ node {
             sh("git add aaa.txt")
             sh("git commit -m \"Commit from original ${env.GIT_COMMIT}\"")
             sh("git push")
+
             if (sourceBranchExists != 0) {
-                sh("git request-pull ")
+                def gitToken;
+                withCredentials([string(credentialsId: env.MY_GITHUB_TOKEN, variable: 'TOKEN')]) {
+                    println("Token found: ${TOKEN.class} / ${TOKEN}")
+                    gitToken = TOKEN
+                }
+
+                sh("GITHUB_TOKEN=${gitToken} hub pull-request -b ${targetBranch} -m \"Creating PR from src ${sourceBranch}\"")
             }
         }
     }
 }
+
