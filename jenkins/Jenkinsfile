@@ -27,22 +27,12 @@ node {
         echo "env: ${envVars}"
         echo "workspace: ${workspace}"
 
-        try {scm.branches} catch (Throwable e) {}
-        try {scm.doGenerateSubmoduleConfigurations} catch (Throwable e) {}
-        try {scm.extensions} catch (Throwable e) {}
-        try {userRemoteConfigs = scm.userRemoteConfigs
-            try {userRemoteConfigs.name} catch (Throwable e) {}
-            try {userRemoteConfigs.refspec} catch (Throwable e) {}
-            try {userRemoteConfigs.url} catch (Throwable e) {}
-            try {userRemoteConfigs.credentialsId} catch (Throwable e) {}
-        } catch (Throwable e) {}
-
         echo("scm. branches: ${scm.branches}, doGenerateSubmoduleConfigurations: ${scm.doGenerateSubmoduleConfigurations} , " +
                 "extensions: ${scm.extensions}")
 
         userRemoteConfigs = scm.userRemoteConfigs
         echo("name: ${userRemoteConfigs.name}, refspec: ${userRemoteConfigs.refspec}, url: ${userRemoteConfigs.url}, " +
-                "credentialsId: ${credentialsId}")
+                "credentialsId: ${userRemoteConfigs.credentialsId}")
 
         sh 'ls'
 
