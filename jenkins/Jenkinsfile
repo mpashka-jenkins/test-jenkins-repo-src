@@ -64,9 +64,16 @@ node {
 
         dir("dst-project") {
             userRemoteConfigs = scm.userRemoteConfigs[0]
+            def build = currentBuild.rawBuild
             def cred0 = CredentialsProvider.findCredentialById(id: userRemoteConfigs.credentialsId
                     , type: StringCredentials.class
                     , build, [])
+            CredentialsProvider.lookupCredentials(
+                    com.cloudbees.plugins.credentials.Credentials.class
+            ).each { cred ->
+                println("Global creds: ${cred.class}, id: ${cred.id}: ${cred.description} -> ${cred}")
+            }
+
             println("Found cred: ${cred0.class}, id: ${cred0.id}: ${cred0.description} -> ${cred0}")
             def secret = cred0.secret
             def token = secret.plainText
