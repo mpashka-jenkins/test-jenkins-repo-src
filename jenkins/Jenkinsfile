@@ -27,6 +27,16 @@ node {
         echo "env: ${envVars}"
         echo "workspace: ${workspace}"
 
+        try {scm.branches} catch (e) {}
+        try {scm.doGenerateSubmoduleConfigurations} catch (e) {}
+        try {scm.extensions} catch (e) {}
+        try {userRemoteConfigs = scm.userRemoteConfigs
+            try {userRemoteConfigs.name} catch (e) {}
+            try {userRemoteConfigs.refspec} catch (e) {}
+            try {userRemoteConfigs.url} catch (e) {}
+            try {userRemoteConfigs.credentialsId} catch (e) {}
+        } catch (e) {}
+
         echo("scm. branches: ${scm.branches}, doGenerateSubmoduleConfigurations: ${scm.doGenerateSubmoduleConfigurations} , " +
                 "extensions: ${scm.extensions}")
 
