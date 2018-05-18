@@ -59,19 +59,19 @@ node {
 //        GITHUB_PR_TITLE
 
         dir("dst-project") {
-            userRemoteConfigs = scm.userRemoteConfigs
+            userRemoteConfigs = scm.userRemoteConfigs[0]
 //            CredentialsProvider.findCredentialById(id: userRemoteConfigs.credentialsId, type: )
 
             com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials(
                     com.cloudbees.plugins.credentials.Credentials.class
             ).each { cred ->
-                println("Global creds: ${cred.id}: ${cred.description}")
+                println("Global creds: ${cred.class}, id: ${cred.id}: ${cred.description} -> ${cred}")
             }
             Jenkins.instance.getAllItems(com.cloudbees.hudson.plugins.folder.Folder.class).each{ f ->
                 creds = com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials(
                         com.cloudbees.plugins.credentials.Credentials.class, f)
                 creds.each{cred ->
-                    println("Folder instance ${f} cred: ${cred.id}: ${cred.description}")
+                    println("Folder instance ${f} cred: ${cred.id}: ${cred.description} -> ${cred}")
                 }
             }
 
