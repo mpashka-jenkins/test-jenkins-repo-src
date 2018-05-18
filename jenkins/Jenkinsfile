@@ -64,7 +64,7 @@ node {
 //        GITHUB_PR_TITLE
 
 
-        withCredentials([string(credentialsId: ${MY_GITHUB_TOKEN}, variable: 'TOKEN')]) {
+        withCredentials([string(credentialsId: env.MY_GITHUB_TOKEN, variable: 'TOKEN')]) {
             println("Token found: ${TOKEN}")
         }
 
