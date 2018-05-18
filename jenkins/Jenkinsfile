@@ -28,7 +28,7 @@ node {
         echo "workspace: ${workspace}"
 
         echo("scm. branches: ${scm.branches}, doGenerateSubmoduleConfigurations: ${scm.doGenerateSubmoduleConfigurations} , " +
-                "extensions: ${scm.extensions}")
+                "extensions: ${scm.extensions}, userRemoteConfigs: ${scm.userRemoteConfigs}")
 
         userRemoteConfigs = scm.userRemoteConfigs
         echo("name: ${userRemoteConfigs.name}, refspec: ${userRemoteConfigs.refspec}, url: ${userRemoteConfigs.url}, " +
