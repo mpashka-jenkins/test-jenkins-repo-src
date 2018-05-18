@@ -74,12 +74,12 @@ node {
             ]
 
             checkout(dstScm)
-            int targetBranchExists = sh(returnStdout: false, returnStatus: true, script: "git rev-parse --quiet --verify ${targetBranch}").trim()
+            int targetBranchExists = sh(returnStatus: true, script: "git rev-parse --quiet --verify ${targetBranch}")
             if (targetBranchExists != 0) {
                 throw new hudson.AbortException("Target branch ${targetBranchExists} doesn't exist in dest project")
             }
 
-            int sourceBranchExists = sh(returnStdout: false, returnStatus: true, script: "git rev-parse --quiet --verify ${sourceBranch}").trim()
+            int sourceBranchExists = sh(returnStatus: true, script: "git rev-parse --quiet --verify ${sourceBranch}")
             if (sourceBranchExists != 0) {
                 sh("git checkout -b ${sourceBranch}")
                 sh("git branch --set-upstream-to origin/${sourceBranch}")
