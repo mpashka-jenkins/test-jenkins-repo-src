@@ -31,17 +31,18 @@ node {
 
 
         echo 'Hello world from my pipeline'
-/*
+
         echo '------------ env'
         sh 'env'
         echo '------------ set'
         sh 'set'
         echo '------------'
-*/
 
 //        String sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
 
 //        git symbolic-ref HEAD
-        String branch = sh(returnStdout: true, script: "git symbolic-ref --short HEAD").trim()
+//        String branch = sh(returnStdout: true, script: "git symbolic-ref --short HEAD").trim()
+
+        GitSCM
     }
 }
