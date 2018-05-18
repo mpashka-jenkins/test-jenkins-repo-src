@@ -8,8 +8,10 @@ import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 node {
     def checkoutResult = checkout scm
     stage('Build') {
-        def build = currentBuild.rawBuild
+        def build2 = currentBuild.rawBuild
         println("Build: ${build.class} / ${build}")
+        println("Build2: ${build2.class} / ${build2}")
+        def mbuild2 = build
 
         def envVars = env.getEnvironment()
         def workspace = pwd()
@@ -72,10 +74,10 @@ node {
             }
 
 
-            def build = currentBuild.build
+//            def build = currentBuild.build
             def cred0 = CredentialsProvider.findCredentialById(id: userRemoteConfigs.credentialsId
                     , type: StringCredentials.class
-                    , build, [])
+                    , mbuild2, [])
             CredentialsProvider.lookupCredentials(
                     com.cloudbees.plugins.credentials.Credentials.class
             ).each { cred ->
