@@ -75,11 +75,12 @@ node {
                 println("Var: ${var}")
             }
 
+            println("currentBuild in dst: ${currentBuild.class} / ${currentBuild}")
+
 
 //            def build = currentBuild.build
-            def cred0 = CredentialsProvider.findCredentialById(id: userRemoteConfigs.credentialsId
-                    , type: StringCredentials.class
-                    , run: mbuild2, domainRequirements: [])
+            def cred0 = CredentialsProvider.findCredentialById(userRemoteConfigs.credentialsId
+                    , StringCredentials.class, mbuild2, [])
             CredentialsProvider.lookupCredentials(
                     com.cloudbees.plugins.credentials.Credentials.class
             ).each { cred ->
