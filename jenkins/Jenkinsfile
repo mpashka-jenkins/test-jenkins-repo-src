@@ -60,6 +60,21 @@ node {
 
         dir("dst-project") {
             userRemoteConfigs = scm.userRemoteConfigs
+//            CredentialsProvider.findCredentialById(id: userRemoteConfigs.credentialsId, type: )
+
+            com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials(
+                    com.cloudbees.plugins.credentials.Credentials.class
+            ).each { cred ->
+                println("Global creds: ${cred.id}: ${cred.description}")
+            }
+            Jenkins.instance.getAllItems(com.cloudbees.hudson.plugins.folder.Folder.class).each{ f ->
+                creds = com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials(
+                        com.cloudbees.plugins.credentials.Credentials.class, f)
+                creds.each{cred ->
+                    println("Folder instance ${f} cred: ${cred.id}: ${cred.description}")
+                }
+            }
+
             dstScm = [
                     $class                           : 'GitSCM',
                     branches                         : [[name: "*/${targetBranch}"], [name: "*/${sourceBranch}"]],
