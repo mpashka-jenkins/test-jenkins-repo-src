@@ -8,10 +8,12 @@ import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 node {
     def checkoutResult = checkout scm
     stage('Build') {
+        println("currentBuild: ${currentBuild.class} / ${currentBuild}")
         def build2 = currentBuild.rawBuild
-        println("Build: ${build.class} / ${build}")
         println("Build2: ${build2.class} / ${build2}")
-        def mbuild2 = build
+
+//        println("Build: ${build.class} / ${build}")
+        def mbuild2 = build2
 
         def envVars = env.getEnvironment()
         def workspace = pwd()
