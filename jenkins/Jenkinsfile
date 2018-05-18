@@ -1,5 +1,9 @@
 #!groovy
 
+
+import com.cloudbees.plugins.credentials.CredentialsProvider
+import org.jenkinsci.plugins.plaincredentials.StringCredentials
+
 node {
     def checkoutResult = checkout scm
     stage('Build') {
@@ -60,7 +64,13 @@ node {
 
         dir("dst-project") {
             userRemoteConfigs = scm.userRemoteConfigs[0]
-//            CredentialsProvider.findCredentialById(id: userRemoteConfigs.credentialsId, type: )
+            def cred0 = CredentialsProvider.findCredentialById(id: userRemoteConfigs.credentialsId
+                    , type: StringCredentials.class
+                    , build, [])
+            println("Found cred: ${cred0.class}, id: ${cred0.id}: ${cred0.description} -> ${cred0}")
+            def secret = cred0.secret
+            def token = secret.plainText
+            println("Token: ${token}")
 
             com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials(
                     com.cloudbees.plugins.credentials.Credentials.class
@@ -74,6 +84,9 @@ node {
                     println("Folder instance ${f} cred: ${cred.id}: ${cred.description} -> ${cred}")
                 }
             }
+
+            CredentialsProvider.
+
 
             dstScm = [
                     $class                           : 'GitSCM',
