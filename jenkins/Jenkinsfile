@@ -8,6 +8,8 @@ import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 node {
     def checkoutResult = checkout scm
     stage('Build') {
+        def build = currentBuild.rawBuild
+        println("Build: ${build.class} / ${build}")
 
         def envVars = env.getEnvironment()
         def workspace = pwd()
@@ -65,7 +67,6 @@ node {
 
         dir("dst-project") {
             def userRemoteConfigs = scm.userRemoteConfigs[0]
-
             GlobalVariable.ALL.each { var ->
                 println("Var: ${var}")
             }
