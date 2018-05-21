@@ -4,7 +4,7 @@
 node {
 //    def checkoutResult = checkout scm
 
-    println("env: ${env}")
+    println("env: ${env.getEnvironment()}")
 
     stage('Build') {
         withCredentials([string(credentialsId: env.MY_GITHUB_TOKEN, variable: 'TOKEN')]) {
