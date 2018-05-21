@@ -85,7 +85,7 @@ node {
             String targetBranch = env.GITHUB_PR_TARGET_BRANCH
             String sourceBranch = env.GITHUB_PR_SOURCE_BRANCH
 
-            sh("../bin/hub pull")
+            sh("../bin/hub fetch")
 
 //            int targetBranchExists = sh(returnStatus: true, script: "git rev-parse --quiet --verify ${targetBranch}")
             int targetBranchExists = sh(returnStatus: true, script: "../bin/hub checkout ${targetBranch}")
@@ -96,7 +96,6 @@ node {
             int sourceBranchExists = sh(returnStatus: true, script: "../bin/hub rev-parse --quiet --verify ${sourceBranch}")
             if (sourceBranchExists != 0) {
                 sh("../bin/hub checkout -b ${sourceBranch}")
-//                sh("../bin/hub branch --set-upstream-to origin/${sourceBranch}")
             }
 
             writeFile(name: 'aaa.txt', text: "Creating commit for original ${env.GIT_COMMIT}")
@@ -105,6 +104,7 @@ node {
             sh("../bin/hub push --set-upstream-to origin/${sourceBranch}")
 
             if (sourceBranchExists != 0) {
+                sh("../bin/hub branch --set-upstream-to origin/${sourceBranch}")
                 sh("../bin/hub pull-request -b ${targetBranch} -m \"Creating PR from src ${sourceBranch}\"")
             }
         }
