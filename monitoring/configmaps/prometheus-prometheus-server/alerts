@@ -1,0 +1,152 @@
+ALERT BH_Qps
+    IF bh_total_requests{endpoint="overall",timeinterval="recent-avg"} * on(instance,name) group_left(environment)app_pod_info{environment="prod"}==0 
+    FOR 10m
+    ANNOTATIONS {
+    summary = "BH pod {{ $labels.instance }} is not receiving traffic",
+    description = "{{ $labels.instance }} qps is less than 5. Please check if ingress is configured properly and ingress controller is ingesting traffic. (current value: {{ $value }} qps)",
+    }
+ALERT RTS_Qps
+    IF rts_requests{timeinterval="recent-avg"} * on(instance,name) group_left(environment)app_pod_info{environment="prod"}==0
+    FOR 10m
+    ANNOTATIONS {
+    summary = "RTS pod {{ $labels.instance }} is not receiving traffic",
+    description = "{{ $labels.instance }} qps is less than 5. Please check if ingress is configured properly and ingress controller is ingesting traffic. (current value: {{ $value }} qps)",
+    }
+
+ALERT RTS_Response_Time
+    IF rts_response_time{timeinterval="recent-avg"} * on(instance,name) group_left(environment)app_pod_info{environment="prod"}>120
+    FOR 10m
+    ANNOTATIONS {
+    summary = "RTS pod {{ $labels.instance }} average response time over 120ms",
+    description = "{{ $labels.instance }} average response time over 120ms. Please check if QPS is not too high, increase throttling. (current value: {{ $value }} ms)",
+    }
+
+ALERT PRTS_Fwd_Trip_Time
+    IF prts_fwd_trip_time{timeinterval="recent-avg"} * on(instance,name) group_left(environment)app_pod_info{environment="prod"}>5
+    FOR 10m
+    ANNOTATIONS {
+    summary = "PRTS pod {{ $labels.instance }} average forward time over 5ms",
+    description = "{{ $labels.instance }} average forward time time over 5ms. Please check if QPS is not too high, increase number of PRTS pods. (current value: {{ $value }} ms)",
+    }
+
+ALERT PRTS_Qps
+    IF prts_requests{timeinterval="recent-avg"} * on(instance,name) group_left(environment)app_pod_info{environment="prod"}==0
+    FOR 10m
+    ANNOTATIONS {
+    summary = "PRTS pod {{ $labels.instance }} is not receiving traffic",
+    description = "{{ $labels.instance }} qps is 0. Please check if ingress is configured properly and ingress controller is ingesting traffic. (current value: {{ $value }} qps)",
+    }
+
+ALERT ED_No_Responses
+    IF ed_no_responses{timeinterval="recent-avg"} * on(instance,name) group_left(environment)app_pod_info{environment="prod"}>0
+    FOR 10m
+    ANNOTATIONS {
+    summary = "ED pod {{ $labels.instance }} is not receiving responses",
+    description = "{{ $labels.instance }} is not receiving responses. Please check if MPC/RTB is configured properly. (current value: {{ $value }} qps)",
+    }
+
+ALERT ED_Qps
+    IF edApp_QPS * on(instance,name) group_left(environment)app_pod_info{environment="prod"}==0
+    FOR 10m
+    ANNOTATIONS {
+    summary = "ED pod {{ $labels.instance }} is not receiving traffic",
+    description = "{{ $labels.instance }} qps is 0. Please check if RTS is configured correctly and rts qps > 0. (current value: {{ $value }} qps)",
+    }
+
+ALERT ED_Fill_Rate
+    IF ed_fill_rate{timeinterval="recent-avg"} * on(instance,name) group_left(environment)app_pod_info{environment="prod"}<1.25
+    FOR 10m
+    ANNOTATIONS {
+    summary = "ED pod {{ $labels.instance }} fill rate is less than 1.25",
+    description = "{{ $labels.instance }} fill rate is less than 1.25. Please check filters configuration on RTB layer. (current value: {{ $value }} fill rate)",
+    }
+
+ALERT DataSet_Updates
+    IF data_set_updates * on(instance,name) group_left(environment)app_pod_info{environment="prod"} == 0
+    FOR 61m
+    ANNOTATIONS {
+    summary = "{{ $labels.name }} {{ $labels.instance }} no data sets were updated in last 60 minutes",
+    description = "No data sets were updated in last 60 minutes. Please check if data services are up and running. (current value: {{ $value }} updates)",
+    }
+
+ALERT DataSet_Exceptions
+    IF data_set_exceptions * on(instance,name) group_left(environment)app_pod_info{environment="prod"} > 0
+    FOR 10m
+    ANNOTATIONS {
+    summary = "{{ $labels.name }} {{ $labels.instance }} {{ $labels.ds_name }} has data set reload failure {{ $labels.error }} for last 10 minutes",
+    description = "There is data set which was not reloaded for more than 10 minutes due to errors. Please check if dataservices are up and running, the data set is present and the data is correct depending on the type of error.",
+    }
+ALERT FS_Free
+    IF topk(1, (node_filesystem_avail{device=~"/dev/sd.*"} / node_filesystem_size{device=~"/dev/sd.*"}) * on(instance) group_left(nodename) node_uname_info) by(device,nodename) < 0.2
+    FOR 10m
+    ANNOTATIONS {
+    summary = "{{ $labels.device }} on {{ $labels.nodename }} has less than 20% free",
+    description = "We might be running out of disk space on a device. Please check what is consuming disk space and clean it up if possible. (current value: free {{ $value }} %)",
+    }ALERT K8S_Node_NotReady
+    IF kube_node_status_ready{condition="true"} != 1
+    FOR 10m
+    ANNOTATIONS {
+    summary = "Node {{ $labels.node }} is not ready",
+    description = "Kubelet is not running on the node. Please check if the the docker and kubelet services are running on the box and for errors in kubelet logs.",
+    }
+
+ALERT K8S_Proxy_NotReady
+    IF kube_pod_status_ready{pod=~"kube-proxy.*",condition="true"} * on(pod) group_left(node) kube_pod_info != 1
+    FOR 10m
+    ANNOTATIONS {
+    summary = "Proxy on node {{ $labels.node }} is not ready",
+    description = "The proxy pod is not running. Please check if the the docker and kubelet services are running on the box and for errors in the pod logs.",
+    }
+
+ALERT K8S_ApiServer_NotReady
+    IF kube_pod_status_ready{pod=~"kube-apiserver.*",condition="true"} * on(pod) group_left(node) kube_pod_info != 1
+    FOR 10m
+    ANNOTATIONS {
+    summary = "Api server on node {{ $labels.node }} is not ready",
+    description = "The api server pod is not running. Please check if the the docker and kubelet services are running on the box and for errors in the pod logs.",
+    }
+
+ALERT K8S_ControlManager_NotReady
+    IF kube_pod_status_ready{pod=~"kube-controller-manager.*",condition="true"} * on(pod) group_left(node) kube_pod_info != 1
+    FOR 10m
+    ANNOTATIONS {
+    summary = "Control manager on node {{ $labels.node }} is not ready",
+    description = "The control manager pod is not running. Please check if the the docker and kubelet services are running on the box and for errors in the pod logs.",
+    }
+
+ALERT K8S_Scheduler_NotReady
+    IF kube_pod_status_ready{pod=~"kube-scheduler.*",condition="true"} * on(pod) group_left(node) kube_pod_info != 1
+    FOR 10m
+    ANNOTATIONS {
+    summary = "Scheduler on node {{ $labels.node }} is not ready",
+    description = "The scheduler pod is not running. Please check if the the docker and kubelet services are running on the box and for errors in the pod logs.",
+    }
+
+ALERT K8S_EtcdServer_NotReady
+    IF kube_pod_status_ready{pod=~"etcd-server.*",condition="true"} * on(pod) group_left(node) kube_pod_info != 1
+    FOR 10m
+    ANNOTATIONS {
+    summary = "Scheduler on node {{ $labels.node }} is not ready",
+    description = "The scheduler pod is not running. Please check if the the docker and kubelet services are running on the box and for errors in the pod logs.",
+    }
+
+ALERT K8S_Flannel_NotReady
+    IF kube_pod_status_ready{pod=~"kube-flannel.*",condition="true"} * on(pod) group_left(node) kube_pod_info != 1
+    FOR 10m
+    ANNOTATIONS {
+    summary = "Flannel on node {{ $labels.node }} is not ready",
+    description = "The flannel pod is not running. Please check if the daemon set exists and the label selector is not preventing th epod from being deployed on this node. Check pod logs and whether the docker and kubelet services are running on the box.",
+    }
+ALERT Metrics_Node
+    IF up{kubernetes_name="prometheus-prometheus-node-exporter"} * on(instance) group_left(nodename) node_uname_info == 0
+    FOR 10m
+    ANNOTATIONS {
+    summary = "Unable to scrape metrics from node {{ $labels.nodename }} ",
+    description = "The prometheus node exporter is not running or the node itself might be down. Please check if the docker and kubelet services are running on the box and whether node exporter daemon set was able to start a pod on the node.",
+    }ALERT Swap_Used
+    IF (node_memory_SwapTotal - node_memory_SwapFree) * on(instance) group_left(nodename) node_uname_info > 1073741824
+    FOR 60m
+    ANNOTATIONS {
+    summary = "{{ $labels.nodename }} is using more than 1GB of swap",
+    description = "Using swap might decrease performance of pods running on the node. Please check swapiness settings, the memory usage of pods and whether they have limits specified. If needed kill pods or restart processes running on the node. (current value: used {{ $value }} bytes)",
+    }
