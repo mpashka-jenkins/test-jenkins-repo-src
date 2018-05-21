@@ -62,11 +62,11 @@ node {
 
 
         dir("bin") {
-            sh("if [[ ! -x hub]]; then " +
-                    "wget https://github.com/github/hub/releases/download/v2.3.0-pre10/hub-linux-amd64-2.3.0-pre10.tgz &&" +
-                    "tar -xvf hub-linux-amd64-2.3.0-pre10.tgz &&" +
-                    "mv hub-linux-amd64-2.3.0-pre10/bin/hub ./ " +
-                    "fi")
+            sh("""if [[ ! -x hub]]; then 
+                    wget https://github.com/github/hub/releases/download/v2.3.0-pre10/hub-linux-amd64-2.3.0-pre10.tgz
+                    tar -xvf hub-linux-amd64-2.3.0-pre10.tgz
+                    mv hub-linux-amd64-2.3.0-pre10/bin/hub ./
+                    fi""")
         }
 
         withCredentials([string(credentialsId: env.MY_GITHUB_TOKEN, variable: 'TOKEN')]) {
