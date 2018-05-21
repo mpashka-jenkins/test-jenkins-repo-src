@@ -114,3 +114,9 @@ import com.cloudbees.plugins.credentials.CredentialsProvider
 import org.jenkinsci.plugins.plaincredentials.StringCredentials
 import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 
+
+#echo "Creating commit for original ${sourceCommit} on `date`" > aaa.txt
+#
+#${git} add aaa.txt
+#${git} commit -m "Commit from original src/${sourceBranch} / ${sourceCommit}"
+#${git} push --set-upstream origin ${sourceBranch}

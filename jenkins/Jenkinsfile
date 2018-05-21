@@ -4,65 +4,15 @@
 node {
     def checkoutResult = checkout scm
     stage('Build') {
-
-        def envVars = env.getEnvironment()
-        def workspace = pwd()
-
-        echo "checkout result: ${checkoutResult}"
-        echo "scm: ${scm}"
-        echo "env: ${envVars}"
-        echo "workspace: ${workspace}"
-
-        if (!fileExists('bin/hub')) {
-            dir("bin") {
-                sh(""" 
-                    wget https://github.com/github/hub/releases/download/v2.3.0-pre10/hub-linux-amd64-2.3.0-pre10.tgz
-                    tar -xvf hub-linux-amd64-2.3.0-pre10.tgz
-                    mv hub-linux-amd64-2.3.0-pre10/bin/hub ./
-                    """)
-            }
-        }
-
         withCredentials([string(credentialsId: env.MY_GITHUB_TOKEN, variable: 'TOKEN')]) {
             println("Token found: ${TOKEN.class} / ${TOKEN}")
-            if (!fileExists("test-jenkins-repo-dst")) {
-                sh("GITHUB_TOKEN=${TOKEN} bin/hub clone git@github.com:mpashka/test-jenkins-repo-dst.git")
-            }
-        }
-
-
-
-
-        dir("test-jenkins-repo-dst") {
             String targetBranch = env.GITHUB_PR_TARGET_BRANCH
             String sourceBranch = env.GITHUB_PR_SOURCE_BRANCH
-
-            sh("../bin/hub fetch")
-
-            boolean targetBranchExists = sh(returnStatus: true, script: "../bin/hub rev-parse --verify origin/${targetBranch}") == 0
-            if (!targetBranchExists) {
-                throw new hudson.AbortException("Target branch ${targetBranch} doesn't exist in dest project")
-            }
-
-            boolean sourceBranchExists = sh(returnStatus: true, script: "../bin/hub rev-parse --verify origin/${sourceBranch}") == 0
-            if (sourceBranchExists) {
-                sh("../bin/hub checkout ${sourceBranch}")
-                sh("../bin/hub pull origin ${sourceBranch}")
-            } else {
-                sh("../bin/hub checkout ${targetBranch}")
-                sh("../bin/hub pull")
-                sh("../bin/hub checkout -b ${sourceBranch}")
-            }
-
-            Date date = new Date()
-            writeFile(file: 'aaa.txt', text: "Creating commit for original ${env.GIT_COMMIT} on ${date}")
-            sh("../bin/hub add aaa.txt")
-            sh("../bin/hub commit -m \"Commit from original src/${sourceBranch} / ${env.GIT_COMMIT}\"")
-            sh("../bin/hub push --set-upstream origin ${sourceBranch}")
-
-            if (!sourceBranchExists) {
-                sh("../bin/hub branch --set-upstream-to origin/${sourceBranch}")
-                sh("../bin/hub pull-request -b ${targetBranch} -m \"Creating PR from src ${sourceBranch}\"")
+            String sourceCommit = env.GIT_COMMIT
+            String sourceGitUrl = env.GIT_URL
+            sh("scripts/generateConfigmaps.sh ${TOKEN} ${sourceBranch} ${targetBranch} ${sourceGitUrl}")
+            if (!fileExists("test-jenkins-repo-dst")) {
+                sh("GITHUB_TOKEN=${TOKEN} bin/hub clone git@github.com:mpashka/test-jenkins-repo-dst.git")
             }
         }
     }
