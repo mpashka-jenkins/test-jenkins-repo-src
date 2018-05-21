@@ -2,7 +2,7 @@
 
 
 node {
-//    def checkoutResult = checkout scm
+    def checkoutResult = checkout scm
 
     println("env: ${env.getEnvironment()}")
 
