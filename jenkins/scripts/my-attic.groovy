@@ -1,3 +1,35 @@
+def checkoutResult = checkout scm
+def envVars = env.getEnvironment()
+def workspace = pwd()
+
+
+//checkout result: [GIT_AUTHOR_EMAIL:m_pashka@mail.ru, GIT_AUTHOR_NAME:Pavel Moukhataev, GIT_BRANCH:origin/BR_1, GIT_COMMIT:80acb8e9e197312e0adfab11ce4cb90334ab0ded, GIT_COMMITTER_EMAIL:m_pashka@mail.ru, GIT_COMMITTER_NAME:Pavel Moukhataev, GIT_URL:git@github.com:mpashka/test-jenkins-repo-src.git]
+echo "checkout result: ${checkoutResult}"
+//scm: hudson.plugins.git.GitSCM@4663f2f
+echo "scm: ${scm}"
+echo "env: ${envVars}"
+echo "workspace: ${workspace}"
+
+echo("scm. branches: ${scm.branches}, doGenerateSubmoduleConfigurations: ${scm.doGenerateSubmoduleConfigurations} , " +
+        "extensions: ${scm.extensions}, userRemoteConfigs: ${scm.userRemoteConfigs}")
+
+userRemoteConfigs = scm.userRemoteConfigs
+echo("name: ${userRemoteConfigs.name}, refspec: ${userRemoteConfigs.refspec}, url: ${userRemoteConfigs.url}, " +
+        "credentialsId: ${userRemoteConfigs.credentialsId}")
+
+
+dstScm = [
+        $class                           : 'GitSCM',
+        branches                         : [[name: "*/${targetBranch}"], [name: "*/${sourceBranch}"]],
+        doGenerateSubmoduleConfigurations: false,
+        extensions                       : [],
+//                    userRemoteConfigs                : scm.userRemoteConfigs
+        userRemoteConfigs                : [[url: 'git@github.com:mpashka/test-jenkins-repo-dst.git', credentialsId: userRemoteConfigs.credentialsId]]
+]
+
+checkout(dstScm)
+
+
 println("currentBuild: ${currentBuild.class} / ${currentBuild}")
 def build2 = currentBuild.rawBuild
 println("Build2: ${build2.class} / ${build2}")

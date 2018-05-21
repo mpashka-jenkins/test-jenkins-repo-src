@@ -96,13 +96,13 @@ ${git} rev-parse --quiet --verify origin/${targetBranch} || die "Target branch $
 ${git} rev-parse --quiet --verify origin/${sourceBranch}
 sourceBranchExists=$?
 if [[ $sourceBranchExists == 0 ]]; then
-    echo "Source branch ${sourceBranch} doesn't exist in dst repository. Creating..."
-    ${git} checkout ${sourceBranch}
-    ${git} pull origin ${sourceBranch}
-else
     echo "Source branch ${sourceBranch} exist"
     ${git} checkout ${targetBranch}
     ${git} pull
+else
+    echo "Source branch ${sourceBranch} doesn't exist in dst repository. Creating..."
+    ${git} checkout ${sourceBranch}
+    ${git} pull origin ${sourceBranch}
 fi
 
 files_updated=0
