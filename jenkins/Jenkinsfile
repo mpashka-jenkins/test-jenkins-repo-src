@@ -4,6 +4,7 @@
 node {
     def checkoutResult = checkout scm
 
+    println("checkoutResult: ${checkoutResult.class}")
     println("env: ${env.getEnvironment()}")
 
     stage('Build') {
@@ -11,8 +12,8 @@ node {
             println("Token found: ${TOKEN.class} / ${TOKEN}")
             String targetBranch = env.GITHUB_PR_TARGET_BRANCH
             String sourceBranch = env.GITHUB_PR_SOURCE_BRANCH
-            String sourceCommit = env.GIT_COMMIT
-            String sourceGitUrl = env.GIT_URL
+            String sourceCommit = checkoutResult.GIT_COMMIT
+            String sourceGitUrl = checkoutResult.GIT_URL
             sh("jenkins/scripts/generateConfigmaps.sh ${TOKEN} ${sourceBranch} ${targetBranch} ${sourceCommit} ${sourceGitUrl}")
             if (!fileExists("test-jenkins-repo-dst")) {
                 sh("GITHUB_TOKEN=${TOKEN} bin/hub clone git@github.com:mpashka/test-jenkins-repo-dst.git")
