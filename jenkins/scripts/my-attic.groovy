@@ -62,3 +62,55 @@ dstScm = [
 ]
 
 checkout(dstScm)
+
+
+/*
+        String script_root = "${workspace}/freebsd-ci"
+        String build_script = "${script_root}/scripts/build/build1.sh"
+        String build_ufs_script = "${script_root}/scripts/build/build-ufs-image.sh"
+
+        dir ("freebsd-ci") {
+            git changelog: false, poll: false, url: "${script_url}"
+        }
+*/
+
+//        return deleteDir()
+
+// Write out the new json config file, to be used by subsequent scripts
+//        writeFile file: 'config.json', text: json_str
+
+
+/*
+        echo("scm. branches: ${scm.branches}, doGenerateSubmoduleConfigurations: ${scm.doGenerateSubmoduleConfigurations} , " +
+                "extensions: ${scm.extensions}, userRemoteConfigs: ${scm.userRemoteConfigs}")
+
+        userRemoteConfigs = scm.userRemoteConfigs
+        echo("name: ${userRemoteConfigs.name}, refspec: ${userRemoteConfigs.refspec}, url: ${userRemoteConfigs.url}, " +
+                "credentialsId: ${userRemoteConfigs.credentialsId}")
+
+        sh 'ls'
+
+
+        echo 'Hello world from my pipeline'
+
+        echo '------------ env'
+        sh 'env'
+        echo '------------ set'
+        sh 'set'
+        echo '------------'
+*/
+
+//        String sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+
+//        git symbolic-ref HEAD
+//        String branch = sh(returnStdout: true, script: "git symbolic-ref --short HEAD").trim()
+
+//        GitSCM
+
+
+
+
+import com.cloudbees.plugins.credentials.CredentialsProvider
+import org.jenkinsci.plugins.plaincredentials.StringCredentials
+import org.jenkinsci.plugins.workflow.cps.GlobalVariable
+

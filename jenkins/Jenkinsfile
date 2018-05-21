@@ -39,12 +39,12 @@ node {
 
             sh("../bin/hub fetch")
 
-            boolean targetBranchExists = sh(returnStatus: true, script: "../bin/hub rev-parse --quiet --verify ${targetBranch}") == 0
+            boolean targetBranchExists = sh(returnStatus: true, script: "../bin/hub rev-parse --verify origin/${targetBranch}") == 0
             if (!targetBranchExists) {
                 throw new hudson.AbortException("Target branch ${targetBranch} doesn't exist in dest project")
             }
 
-            boolean sourceBranchExists = sh(returnStatus: true, script: "../bin/hub rev-parse --quiet --verify ${sourceBranch}") == 0
+            boolean sourceBranchExists = sh(returnStatus: true, script: "../bin/hub rev-parse --verify origin/${sourceBranch}") == 0
             if (sourceBranchExists) {
                 sh("../bin/hub checkout ${sourceBranch}")
                 sh("../bin/hub pull origin ${sourceBranch}")
