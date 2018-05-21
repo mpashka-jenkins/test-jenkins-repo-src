@@ -54,9 +54,10 @@ node {
                 sh("../bin/hub checkout -b ${sourceBranch}")
             }
 
-            writeFile(file: 'aaa.txt', text: "Creating commit for original ${env.GIT_COMMIT}")
+            Date date = new Date()
+            writeFile(file: 'aaa.txt', text: "Creating commit for original ${env.GIT_COMMIT} on ${date}")
             sh("../bin/hub add aaa.txt")
-            sh("../bin/hub commit -m \"Commit from original ${env.GIT_COMMIT}\"")
+            sh("../bin/hub commit -m \"Commit from original src/${sourceBranch} / ${env.GIT_COMMIT}\"")
             sh("../bin/hub push --set-upstream origin ${sourceBranch}")
 
             if (!sourceBranchExists) {
