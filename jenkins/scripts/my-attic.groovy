@@ -47,3 +47,18 @@ Jenkins.instance.getAllItems(com.cloudbees.hudson.plugins.folder.Folder.class).e
 //CredentialsProvider.
 
 
+
+
+
+
+def userRemoteConfigs = scm.userRemoteConfigs[0]
+dstScm = [
+        $class                           : 'GitSCM',
+        branches                         : [[name: "*/${targetBranch}"], [name: "*/${sourceBranch}"]],
+        doGenerateSubmoduleConfigurations: false,
+        extensions                       : [],
+//                    userRemoteConfigs                : scm.userRemoteConfigs
+        userRemoteConfigs                : [[url: 'git@github.com:mpashka/test-jenkins-repo-dst.git', credentialsId: userRemoteConfigs.credentialsId]]
+]
+
+checkout(dstScm)
