@@ -75,8 +75,6 @@ node {
             println("Token found: ${TOKEN.class} / ${TOKEN}")
             if (!fileExists("test-jenkins-repo-dst")) {
                 sh("GITHUB_TOKEN=${TOKEN} bin/hub clone git@github.com:mpashka/test-jenkins-repo-dst.git")
-            } else {
-                sh("bin/hub pull")
             }
         }
 
@@ -86,6 +84,8 @@ node {
         dir("test-jenkins-repo-dst") {
             String targetBranch = env.GITHUB_PR_TARGET_BRANCH
             String sourceBranch = env.GITHUB_PR_SOURCE_BRANCH
+
+            sh("../bin/hub pull")
 
 //            int targetBranchExists = sh(returnStatus: true, script: "git rev-parse --quiet --verify ${targetBranch}")
             int targetBranchExists = sh(returnStatus: true, script: "../bin/hub checkout ${targetBranch}")
