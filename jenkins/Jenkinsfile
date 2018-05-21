@@ -39,12 +39,12 @@ node {
 
             sh("../bin/hub fetch")
 
-            int targetBranchExists = sh(returnStatus: true, script: "../bin/hub rev-parse --quiet --verify ${targetBranch}")
-            if (targetBranchExists != 0) {
+            boolean targetBranchExists = sh(returnStatus: true, script: "../bin/hub rev-parse --quiet --verify ${targetBranch}") == 0
+            if (targetBranchExists) {
                 throw new hudson.AbortException("Target branch ${targetBranch} doesn't exist in dest project")
             }
 
-            int sourceBranchExists = sh(returnStatus: true, script: "../bin/hub rev-parse --quiet --verify ${sourceBranch}")
+            boolean sourceBranchExists = sh(returnStatus: true, script: "../bin/hub rev-parse --quiet --verify ${sourceBranch}") == 0
             if (sourceBranchExists) {
                 sh("../bin/hub checkout ${sourceBranch}")
                 sh("../bin/hub pull")
@@ -59,7 +59,7 @@ node {
             sh("../bin/hub commit -m \"Commit from original ${env.GIT_COMMIT}\"")
             sh("../bin/hub push --set-upstream origin ${sourceBranch}")
 
-            if (sourceBranchExists != 0) {
+            if (sourceBranchExists) {
                 sh("../bin/hub branch --set-upstream-to origin/${sourceBranch}")
                 sh("../bin/hub pull-request -b ${targetBranch} -m \"Creating PR from src ${sourceBranch}\"")
             }
