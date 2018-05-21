@@ -2,7 +2,10 @@
 
 
 node {
-    def checkoutResult = checkout scm
+//    def checkoutResult = checkout scm
+
+    println("env: ${env}")
+
     stage('Build') {
         withCredentials([string(credentialsId: env.MY_GITHUB_TOKEN, variable: 'TOKEN')]) {
             println("Token found: ${TOKEN.class} / ${TOKEN}")
