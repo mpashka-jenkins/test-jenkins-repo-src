@@ -68,7 +68,7 @@ node {
 
         withCredentials([string(credentialsId: env.MY_GITHUB_TOKEN, variable: 'TOKEN')]) {
             println("Token found: ${TOKEN.class} / ${TOKEN}")
-            sh("GITHUB_TOKEN=${TOKEN} bin/hub clone mpashka git@github.com:mpashka/test-jenkins-repo-dst.git")
+            sh("GITHUB_TOKEN=${TOKEN} bin/hub clone git@github.com:mpashka/test-jenkins-repo-dst.git")
         }
 
 
