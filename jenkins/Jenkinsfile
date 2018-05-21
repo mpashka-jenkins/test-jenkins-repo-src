@@ -62,7 +62,7 @@ node {
 
 
         dir("bin") {
-            sh("""if [[ ! -x hub]]; then 
+            sh("""if [ ! -x hub ]; then 
                     wget https://github.com/github/hub/releases/download/v2.3.0-pre10/hub-linux-amd64-2.3.0-pre10.tgz
                     tar -xvf hub-linux-amd64-2.3.0-pre10.tgz
                     mv hub-linux-amd64-2.3.0-pre10/bin/hub ./
@@ -72,7 +72,7 @@ node {
         withCredentials([string(credentialsId: env.MY_GITHUB_TOKEN, variable: 'TOKEN')]) {
             println("Token found: ${TOKEN.class} / ${TOKEN}")
             sh("""GITHUB_TOKEN=${TOKEN}
-                    if [[ -d test-jenkins-repo-dst ]] ; then
+                    if [ -d test-jenkins-repo-dst ] ; then
                         bin/hub clone git@github.com:mpashka/test-jenkins-repo-dst.git
                     else
                         bin/hub pull
