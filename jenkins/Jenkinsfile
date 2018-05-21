@@ -96,13 +96,13 @@ node {
             int sourceBranchExists = sh(returnStatus: true, script: "../bin/hub rev-parse --quiet --verify ${sourceBranch}")
             if (sourceBranchExists != 0) {
                 sh("../bin/hub checkout -b ${sourceBranch}")
-                sh("../bin/hub branch --set-upstream-to origin/${sourceBranch}")
+//                sh("../bin/hub branch --set-upstream-to origin/${sourceBranch}")
             }
 
             writeFile(name: 'aaa.txt', text: "Creating commit for original ${env.GIT_COMMIT}")
             sh("../bin/hub add aaa.txt")
             sh("../bin/hub commit -m \"Commit from original ${env.GIT_COMMIT}\"")
-            sh("../bin/hub push")
+            sh("../bin/hub push --set-upstream-to origin/${sourceBranch}")
 
             if (sourceBranchExists != 0) {
                 sh("../bin/hub pull-request -b ${targetBranch} -m \"Creating PR from src ${sourceBranch}\"")
