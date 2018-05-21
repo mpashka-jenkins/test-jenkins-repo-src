@@ -13,7 +13,7 @@ node {
             String sourceBranch = env.GITHUB_PR_SOURCE_BRANCH
             String sourceCommit = env.GIT_COMMIT
             String sourceGitUrl = env.GIT_URL
-            sh("jenkins/scripts/generateConfigmaps.sh ${TOKEN} ${sourceBranch} ${targetBranch} ${sourceGitUrl}")
+            sh("jenkins/scripts/generateConfigmaps.sh ${TOKEN} ${sourceBranch} ${targetBranch} ${sourceCommit} ${sourceGitUrl}")
             if (!fileExists("test-jenkins-repo-dst")) {
                 sh("GITHUB_TOKEN=${TOKEN} bin/hub clone git@github.com:mpashka/test-jenkins-repo-dst.git")
             }
